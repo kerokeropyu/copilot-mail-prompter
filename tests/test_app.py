@@ -1,33 +1,57 @@
-"""Mail Prompt Forge のテスト.
+"""Copilot Mail Prompter のテスト.
 
-CI でも回せるよう、GUI を起動しないロジック部分を対象にする。
-ウィンドウ表示を伴うテストはヘッドレス環境で落ちるため、ここでは扱わない。
+GUI を起動しないロジック部分（_build_prompt）を対象にする。
 """
 
 from __future__ import annotations
 
-import logging
-from pathlib import Path
-
-import pytest
-
-from mail_prompt_forge import app
+from copilot_mail_prompter.app import _build_prompt
 
 
-def test_setup_logging_creates_log_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """setup_logging がログディレクトリとハンドラを用意することを確認する。"""
-    log_dir = tmp_path / "logs"
-    monkeypatch.setattr(app, "LOG_DIR", log_dir)
-    monkeypatch.setattr(app, "LOG_FILE", log_dir / "app.log")
-    # 既存ハンドラをクリアして冪等にする
-    app.logger.handlers.clear()
+def test_proofread_mode_uses_draft() -> None:
+    result = _build_prompt(draft="下書きテスト", received="", sender="", recipient="", internal=True)
+    assert "下書きテスト" in result
+    assert "添削" in result
 
-    app.setup_logging()
 
-    assert log_dir.exists()
-    assert app.logger.level == logging.DEBUG
-    assert len(app.logger.handlers) == 2
+def test_reply_mode_uses_received() -> None:
+    result = _build_prompt(draft="", received="受信メールテスト", sender="", recipient="", internal=True)
+    assert "受信メールテスト" in result
+    assert "返信" in result
+
+
+def test_internal_style_applied() -> None:
+    result = _build_prompt(draft="テスト", received="", sender="", recipient="", internal=True)
+    assert "社内向け" in result
+
+
+def test_external_style_applied() -> None:
+    result = _build_prompt(draft="テスト", received="", sender="", recipient="", internal=False)
+    assert "社外取引先向け" in result
+
+
+def test_rule_block_always_included() -> None:
+    result = _build_prompt(draft="テスト", received="", sender="", recipient="", internal=True)
+    assert "厳守ルール" in result
+
+
+def test_sender_recipient_in_reply_mode() -> None:
+    result = _build_prompt(
+        draft="", received="受信テスト", sender="田中部長", recipient="山田課長", internal=True
+    )
+    assert "田中部長" in result
+    assert "山田課長" in result
+
+
+def test_sender_recipient_not_in_proofread_mode() -> None:
+    result = _build_prompt(
+        draft="下書き", received="", sender="田中部長", recipient="山田課長", internal=True
+    )
+    # 添削モードでは誰から/誰への情報は不要（プロンプトに含めない）
+    assert "田中部長" not in result
+    assert "山田課長" not in result
 
 
 def test_app_name_is_set() -> None:
-    assert app.APP_NAME
+    from copilot_mail_prompter.app import APP_NAME
+    assert APP_NAME == "Copilot Mail Prompter"

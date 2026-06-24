@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec for Mail Prompt Forge (src レイアウト).
+"""PyInstaller spec for Copilot Mail Prompter (src レイアウト).
 
 customtkinter は .json テーマや .otf フォントなどのデータファイルを含むため、
 collect_all で submodules / data / binaries をまとめて取り込む。
@@ -19,7 +19,7 @@ from PyInstaller.utils.hooks import collect_all
 datas, binaries, hiddenimports = collect_all("customtkinter")
 
 a = Analysis(
-    ["src/mail_prompt_forge/app.py"],
+    ["src/copilot_mail_prompter/app.py"],
     pathex=["src"],
     binaries=binaries,
     datas=datas,
@@ -38,7 +38,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="mail_prompt_forge",
+    name="copilot_mail_prompter",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -59,5 +59,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="mail_prompt_forge",
+    name="copilot_mail_prompter",
 )
