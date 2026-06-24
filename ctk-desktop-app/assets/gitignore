@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.python-version
+
+# uv
+# (uv.lock はコミット推奨なので除外しない)
+
+# PyInstaller
+build/
+dist/
+*.manifest
+
+# ログ
+logs/
+
+# ツールキャッシュ
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# OS / エディタ
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/shark/.claude/skills/ctk-desktop-app/assets/**)",
+      "Read(//c/Users/shark/.claude/skills/ctk-desktop-app/references/**)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\shark\\\\Documents\\\\dev\\\\mail-prompt-forge\" -Recurse -Force | Where-Object { $_.FullName -notmatch \"ctk-desktop-app\" -and $_.FullName -notmatch \"\\\\.claude\" } | Select-Object FullName)"
+    ]
+  }
+}
